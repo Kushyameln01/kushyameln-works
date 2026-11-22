@@ -2,6 +2,9 @@ const $ = id => document.getElementById(id);
 const validId = /^[\w-]{11}$/;
 const playerUrl = id => 'https://www.youtube.com/embed/' + id;
 const watchUrl = id => 'https://www.youtube.com/watch?v=' + id;
+// YouTube's /live/ page also serves recorded videos. Its initial HTML can
+// advertise a Player Card even when /watch advertises a large-image card.
+const cardUrl = id => 'https://www.youtube.com/live/' + id;
 
 function videoId(input) {
   const raw = input.trim();
@@ -28,39 +31,11 @@ function videoId(input) {
 let current;
 let template;
 
-function setShare(url, label) {
-  $('share-label').textContent = label;
+function setShare(url) {
   $('share-url').value = url;
   const post = new URL('https://twitter.com/intent/tweet');
   post.searchParams.set('url', url);
   $('post').href = post.href;
-}
-
-async function checkPublished(card) {
-  const revision = ++card.check;
-  const isCurrent = () => current === card && card.check === revision;
-  const url = new URL('./v/' + card.id + '/', import.meta.url);
-  let status;
-  try {
-    const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
-    if (response.status === 404) {
-      status = 'Worksで公開するには、動画IDが記載された公開Issueを送信してください。書き込み権限のある方の依頼は自動公開されます。その他の依頼は、担当者がIssueに /publish-card とコメントすると公開されます。';
-    } else {
-      if (!response.ok) throw new Error();
-      const html = new DOMParser().parseFromString(await response.text(), 'text/html');
-      const meta = name => html.querySelector('meta[name="' + name + '"]')?.content;
-      if (meta('twitter:card') !== 'player' || meta('twitter:player') !== playerUrl(card.id)) throw new Error();
-      if (!isCurrent()) return;
-      setShare(url.href, 'WorksのカードURL');
-      $('request').hidden = true;
-      $('refresh').hidden = true;
-      $('availability').textContent = 'Worksのカードページは公開済みです。';
-      return;
-    }
-  } catch {
-    status = 'Worksの公開状況を取得できませんでした。YouTubeの共有URLとカードHTMLは利用できます。';
-  }
-  if (isCurrent()) $('availability').textContent = status;
 }
 
 async function loadTitle(card) {
@@ -91,12 +66,12 @@ function setup(input) {
     $('video').focus();
     return;
   }
-  const card = { id, title: 'YouTube 動画 ' + id, check: 0, requested: false };
+  const card = { id, title: 'YouTube 動画 ' + id };
   current = card;
   $('message').textContent = '';
   $('feedback').textContent = '';
   $('result').hidden = false;
-  $('publish').open = false;
+  setShare(cardUrl(id));
   $('video-title').textContent = card.title;
   const frame = document.createElement('iframe');
   frame.title = card.title;
@@ -105,28 +80,13 @@ function setup(input) {
   frame.allowFullscreen = true;
   frame.referrerPolicy = 'strict-origin-when-cross-origin';
   $('preview').replaceChildren(frame);
-  setShare(watchUrl(id), 'YouTubeの共有URL');
-  const request = new URL('https://github.com/Kushyameln01/kushyameln-works/issues/new');
-  request.searchParams.set('title', 'Player Card: ' + id);
-  request.searchParams.set('body', 'この動画のX Player CardをKushyameln Worksに公開します。\n\n' + watchUrl(id));
-  $('request').href = request.href;
-  $('request').hidden = false;
-  $('refresh').hidden = false;
-  $('availability').textContent = 'Worksの公開状況を確認中…';
   void loadTitle(card);
-  void checkPublished(card);
 }
 
 $('setup').addEventListener('submit', event => {
   event.preventDefault();
   setup($('video').value);
 });
-$('request').addEventListener('click', () => { if (current) current.requested = true; });
-window.addEventListener('focus', () => {
-  if (current?.requested && !$('request').hidden) void checkPublished(current);
-});
-$('refresh').addEventListener('click', () => { if (current) void checkPublished(current); });
-
 $('copy').addEventListener('click', async () => {
   const field = $('share-url');
   const original = field.value;
