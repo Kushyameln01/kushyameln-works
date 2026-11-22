@@ -15,25 +15,23 @@
       <label for="video">YouTube の動画URLまたは動画ID</label>
       <div class="row">
         <input id="video" type="text" placeholder="https://youtu.be/…" autocomplete="off" spellcheck="false" required>
-        <button type="submit">カードを作成</button>
+        <button type="submit">投稿文を作成</button>
       </div>
     </form>
     <a href="?v=2p0QxvP06H8">VR180のサンプルを試す</a>
     <p id="message" role="status"></p>
     <section id="result" hidden>
-      <h2 id="video-title"></h2>
-      <label for="share-url">Xに貼るカードURL（YouTube）</label>
+      <label for="post-text">Xに投稿する本文</label>
+      <textarea id="post-text" rows="4"></textarea>
       <div class="row">
-        <input id="share-url" type="text" readonly>
-        <button id="copy" type="button">コピー</button>
+        <button id="copy" type="button">本文をコピー</button>
         <a id="post" target="_blank" rel="noopener">Xで投稿</a>
       </div>
       <p role="status" id="feedback"></p>
       <div id="preview"></div>
-      <button id="save" type="button">カードHTMLを保存</button>
     </section>
-    <noscript>カードを作成するにはJavaScriptを有効にしてください。</noscript>
+    <noscript>投稿文を作成するにはJavaScriptを有効にしてください。</noscript>
   </main>
-  <script type="module" src="./app.mjs"></script>
+  <script type="module" src="./app.mjs?post-text"></script>
 </body>
 </html>

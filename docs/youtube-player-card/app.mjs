@@ -29,13 +29,17 @@ function videoId(input) {
 }
 
 let current;
-let template;
+const postText = $('post-text');
 
-function setShare(url) {
-  $('share-url').value = url;
+function updatePostLink() {
   const post = new URL('https://twitter.com/intent/tweet');
-  post.searchParams.set('url', url);
+  post.searchParams.set('text', postText.value);
   $('post').href = post.href;
+}
+
+function setDraft(id, title) {
+  postText.value = title + '\n' + cardUrl(id);
+  updatePostLink();
 }
 
 async function loadTitle(card) {
@@ -47,12 +51,11 @@ async function loadTitle(card) {
     if (!response.ok) return;
     const { title } = await response.json();
     if (current === card && typeof title === 'string' && title.trim()) {
-      card.title = title;
-      $('video-title').textContent = title;
       $('preview').firstElementChild.title = title;
+      if (!card.draftInUse) setDraft(card.id, title.trim());
     }
   } catch {
-    // The title is optional. Linking and exporting work with the video ID alone.
+    // The initial post is ready even if YouTube does not return a title.
   }
 }
 
@@ -66,15 +69,15 @@ function setup(input) {
     $('video').focus();
     return;
   }
-  const card = { id, title: 'YouTube 動画 ' + id };
+  if (current?.id === id) return;
+  const card = { id, draftInUse: false };
   current = card;
   $('message').textContent = '';
   $('feedback').textContent = '';
   $('result').hidden = false;
-  setShare(cardUrl(id));
-  $('video-title').textContent = card.title;
+  setDraft(id, 'YouTubeで見る');
   const frame = document.createElement('iframe');
-  frame.title = card.title;
+  frame.title = 'YouTube 動画 ' + id;
   frame.src = playerUrl(id);
   frame.allow = 'accelerometer; gyroscope; encrypted-media; picture-in-picture; fullscreen; xr-spatial-tracking';
   frame.allowFullscreen = true;
@@ -87,41 +90,25 @@ $('setup').addEventListener('submit', event => {
   event.preventDefault();
   setup($('video').value);
 });
-$('copy').addEventListener('click', async () => {
-  const field = $('share-url');
-  const original = field.value;
-  try {
-    await navigator.clipboard.writeText(original);
-    if (field.value === original) $('feedback').textContent = 'URLをコピーしました。';
-  } catch {
-    field.focus();
-    field.select();
-    $('feedback').textContent = '選択されたURLをコピーしてください。';
-  }
+// An optional title lookup must not replace a post someone has edited or copied.
+postText.addEventListener('input', () => {
+  current.draftInUse = true;
+  $('feedback').textContent = '';
+  updatePostLink();
 });
-
-const htmlEntities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-$('save').addEventListener('click', async () => {
+$('post').addEventListener('click', () => { current.draftInUse = true; });
+$('copy').addEventListener('click', async () => {
   const card = current;
-  if (!card) return;
+  card.draftInUse = true;
+  const text = postText.value;
   try {
-    if (!template) {
-      const response = await fetch('./card-template.html');
-      if (!response.ok) throw new Error();
-      template = await response.text();
-    }
-    if (current !== card) return;
-    const title = card.title.replace(/[&<>"']/g, character => htmlEntities[character]);
-    const fields = { VIDEO_ID: card.id, TITLE: title };
-    const html = template.replace(/__(VIDEO_ID|TITLE)__/g, (_, field) => fields[field]);
-    const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = card.id + '.html';
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    await navigator.clipboard.writeText(text);
+    if (current === card && postText.value === text) $('feedback').textContent = '投稿文をコピーしました。';
   } catch {
-    if (current === card) $('feedback').textContent = 'カードHTMLを読み込めませんでした。もう一度お試しください。';
+    if (current !== card || postText.value !== text) return;
+    postText.focus();
+    postText.select();
+    $('feedback').textContent = '選択された投稿文をコピーしてください。';
   }
 });
 
