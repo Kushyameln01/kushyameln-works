@@ -1,0 +1,91 @@
+name: Publish a YouTube Player Card
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  publish:
+    if: >-
+      !github.event.issue.pull_request &&
+      startsWith(github.event.issue.title, 'Player Card: ') &&
+      ((github.event_name == 'issues' &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+       (github.event_name == 'issue_comment' && github.event.comment.body == '/publish-card' &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: write
+      pages: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+    steps:
+      - name: Identify the approved card
+        id: request
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          if [[ "$ISSUE_TITLE" =~ ^Player\ Card:\ ([A-Za-z0-9_-]{11})$ ]]; then
+            video_id=${BASH_REMATCH[1]}
+            permission=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$GITHUB_ACTOR/permission" --jq '.permission')
+            if [[ "$permission" == admin || "$permission" == write ]]; then
+              echo "video_id=$video_id" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        if: steps.request.outputs.video_id != ''
+        with:
+          ref: main
+
+      - name: Publish the card and its registry entry together
+        if: steps.request.outputs.video_id != ''
+        env:
+          VIDEO_ID: ${{ steps.request.outputs.video_id }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          card="docs/youtube-player-card/v/$VIDEO_ID/index.html"
+          for attempt in {1..8}; do
+            git fetch --quiet origin main
+            git reset --hard FETCH_HEAD
+            base=$(git rev-parse HEAD)
+            python3 scripts/publish-youtube-card.py "$VIDEO_ID"
+            git add -- "$card" security/public-files.json
+            python3 scripts/publish-youtube-card.py --check-staged "$VIDEO_ID"
+            if git diff --cached --quiet; then break; fi
+            git commit --quiet -m "Publish YouTube Player Card for $VIDEO_ID"
+            if git push origin HEAD:main; then break; fi
+            latest=$(git ls-remote origin refs/heads/main | cut -f1)
+            if [[ "$base" == "$latest" || "$attempt" == 8 ]]; then exit 1; fi
+            sleep "$((RANDOM % 4 + 1))"
+          done
+
+      - name: Return the published URL
+        if: steps.request.outputs.video_id != ''
+        env:
+          VIDEO_ID: ${{ steps.request.outputs.video_id }}
+        run: |
+          card="docs/youtube-player-card/v/$VIDEO_ID/index.html"
+          site=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .html_url)
+          url="${site%/}/youtube-player-card/v/$VIDEO_ID/"
+          served() {
+            curl --silent --show-error --fail --location --max-time 12 "$url" -o "$RUNNER_TEMP/served-card.html" &&
+              cmp -s "$RUNNER_TEMP/served-card.html" "$card"
+          }
+          if ! served; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" --silent
+            for wait in {1..26}; do
+              sleep 10
+              if served; then break; fi
+            done
+            cmp "$RUNNER_TEMP/served-card.html" "$card"
+          fi
+          gh issue close "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --comment "X に貼る共有URL: $url"
